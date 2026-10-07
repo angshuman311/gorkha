@@ -49,6 +49,6 @@ if __name__ == "__main__":
                                  "wards": int(s.sum()), "mae": float(np.abs(m - y)[~s].mean())})
                 print(f"level {level} selection {sel} round {r.round} done", flush=True)
     t = pd.DataFrame(rows)
-    t.to_csv(RESULTS / "ablation_2x2.csv", index=False)
+    t.to_csv(RESULTS / ("ablation_2x2.csv" if args.file == "campaign2_mode2.parquet" else "ablation_2x2_2015.csv"), index=False)
     pd.set_option("display.width", 200)
     print(t.pivot_table(index=["level", "round"], columns=["selection", "estimator"], values="mae").round(4).to_string())

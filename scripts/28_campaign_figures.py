@@ -1,6 +1,8 @@
 """Figures and tables of the survey campaigns: error against cost, error against the share
 of surveyed wards, and the cost to reach an error target against the blockage level."""
 
+import argparse
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,9 +10,14 @@ import pandas as pd
 from gorkha import plots
 from gorkha.paths import FIGURES, RESULTS
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--prefix", default="campaign2", help="campaign2 (OSM roads of 2026) or campaign3 (roads of 2015)")
+parser.add_argument("--suffix", default="", help="suffix of the figure and table names, for example _2015")
+ARGS = parser.parse_args()
+
 # The second study (four survey methods) replaces the first one when its files exist.
-FILES_NEW = {"campaign2_mode2.parquet": {"gorkha": "gorkha_mode2"},
-             "campaign2_mode1.parquet": {"gorkha": "gorkha_mode1"}}
+FILES_NEW = {f"{ARGS.prefix}_mode2.parquet": {"gorkha": "gorkha_mode2"},
+             f"{ARGS.prefix}_mode1.parquet": {"gorkha": "gorkha_mode1"}}
 FILES_OLD = {"campaign_mode2.parquet": {"sherpa": "gorkha_mode2", "kriging": "kriging_var"},
              "campaign_mode1.parquet": {"sherpa": "gorkha_mode1"}}
 LABEL = {"random": "Kriging, random surveys",
@@ -96,10 +103,10 @@ if __name__ == "__main__":
     c = curves(res)
     panel_figure(c, levels, methods, "cost_hours", "survey cost (team days)",
                  "Survey campaigns: error against cost (11 teams, 16 rounds, mean of the runs)",
-                 FIGURES / "campaign_error_cost.png")
+                 FIGURES / f"campaign_error_cost{ARGS.suffix}.png")
     panel_figure(c, levels, methods, "n_surveyed", "wards with a survey (% of 945)",
                  "Survey campaigns: error against the share of surveyed wards",
-                 FIGURES / "campaign_error_share.png")
+                 FIGURES / f"campaign_error_share{ARGS.suffix}.png")
 
     pd.set_option("display.width", 220)
     last = res["round"].max()
@@ -116,8 +123,8 @@ if __name__ == "__main__":
         tab = tab.copy()
         tab["cost"] = tab["cost"] / 24
         print(tab.round(2).unstack("method").to_string())
-    final.to_csv(RESULTS / "campaign_final.csv")
-    pd.concat({t: tab for t, tab in tables.items()}, names=["target"]).to_csv(RESULTS / "campaign_cost_to_reach.csv")
+    final.to_csv(RESULTS / f"campaign_final{ARGS.suffix}.csv")
+    pd.concat({t: tab for t, tab in tables.items()}, names=["target"]).to_csv(RESULTS / f"campaign_cost_to_reach{ARGS.suffix}.csv")
 
     # Cost to reach the error target against the blockage level, all methods.
     fig, axes = plt.subplots(1, len(TARGETS), figsize=(4.4 * len(TARGETS), 4.2), layout="constrained")
@@ -135,7 +142,7 @@ if __name__ == "__main__":
     np.atleast_1d(axes)[0].legend(fontsize=7.5)
     fig.suptitle("Cost of a survey campaign against the road blockage (a run that never reaches the "
                  "target counts with its full cost)", x=0.01, ha="left", fontsize=11)
-    fig.savefig(FIGURES / "campaign_cost_blockage.png")
+    fig.savefig(FIGURES / f"campaign_cost_blockage{ARGS.suffix}.png")
     plt.close(fig)
 
     # Benefit of GORKHA against the strongest kriging reference.
@@ -158,6 +165,6 @@ if __name__ == "__main__":
         ax.set_ylabel(f"team days saved against {LABEL[REFERENCE].lower()} (error 0.17)")
         ax.set_title("Benefit of GORKHA against the road blockage")
         ax.legend(fontsize=8)
-        fig.savefig(FIGURES / "campaign_benefit_blockage.png")
+        fig.savefig(FIGURES / f"campaign_benefit_blockage{ARGS.suffix}.png")
         print(f"\nteam days saved against {REFERENCE}:")
         print(b.pivot_table(index=["target", "level"], columns="method", values="days_saved").round(2).to_string())

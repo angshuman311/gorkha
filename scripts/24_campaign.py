@@ -27,6 +27,8 @@ if __name__ == "__main__":
     parser.add_argument("--levels", default="0,obs,30,60,100")
     parser.add_argument("--methods", default="random,nearest,kriging_var,kriging_ivr,gorkha")
     parser.add_argument("--keep", action="store_true", help="keep the estimate of each ward")
+    parser.add_argument("--roads", default="roads_levels.npz",
+                        help="travel time file: roads_levels.npz (OSM 2026) or roads_2015_levels.npz")
     parser.add_argument("--events", type=int, default=2, choices=[1, 2])
     parser.add_argument("--out", default="campaign.parquet")
     parser.add_argument("--image", default="s2_embedding_ssl4eo_ft.parquet",
@@ -45,8 +47,9 @@ if __name__ == "__main__":
         assert (emb["ward_id"].to_numpy() == df["ward_id"].to_numpy()).all()
         x_sherpa = np.hstack([x, emb.drop(columns="ward_id").to_numpy(dtype="float32")])
     print(f"SHERPA input: {x_sherpa.shape[1]} values for each ward ({args.image})", flush=True)
-    with np.load(PROCESSED / "roads_levels.npz") as f:
+    with np.load(PROCESSED / args.roads) as f:
         matrices = {k: f[k].astype(float) for k in f.files}
+    print(f"travel times: {args.roads}, levels on disk: {sorted(matrices)}", flush=True)
     start = [int(i) for i in df.groupby("district_name")["dist_hq_km"].idxmin()]
     methods = args.methods.split(",")
     print(f"teams: {len(start)}, rounds: {args.rounds}, wards at the end: "
@@ -57,10 +60,11 @@ if __name__ == "__main__":
     done = {(r["level"], r["draw"], r["method"], r["seed"]) for r in rows}
     t0 = time.time()
     for level in args.levels.split(","):
-        for draw in range(roads.BLOCK_LEVELS[level]):
+        draws = sum(1 for k in matrices if k.startswith(f"t_{level}_"))
+        for draw in range(draws):
             travel = matrices[f"t_{level}_{draw}"]
             # With one draw (levels 0 and 100), the seeds give the repetitions.
-            reps = 3 if roads.BLOCK_LEVELS[level] == 1 else 1
+            reps = 3 if draws == 1 else 1
             runs = {"random": 2 * reps, "gorkha": reps, "sherpa": reps}
             plan = [(m, draw * 10 + s) for m in methods for s in range(runs.get(m, 1))]
             for method, seed in plan:

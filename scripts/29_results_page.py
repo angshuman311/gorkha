@@ -1,10 +1,17 @@
 """Write docs/SHERPA_results.html from the campaign results and the figures."""
 
+import argparse
 import base64
 
 import pandas as pd
 
 from gorkha.paths import FIGURES, RESULTS, ROOT
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--suffix", default="", help="suffix of the figures and tables, for example _2015")
+parser.add_argument("--roads", default="OpenStreetMap roads of 2026")
+parser.add_argument("--ablation", default="ablation_2x2.csv")
+ARGS = parser.parse_args()
 
 CSS = """
 :root { --ink:#1f1f1e; --muted:#5f5e5a; --teal:#103d3e; --orange:#c05a26; --bg:#ffffff; --panel:#f5f4f0; }
@@ -45,16 +52,16 @@ def table(df: pd.DataFrame, fmt="{:.3f}") -> str:
 
 
 if __name__ == "__main__":
-    final = pd.read_csv(RESULTS / "campaign_final.csv")
+    final = pd.read_csv(RESULTS / f"campaign_final{ARGS.suffix}.csv")
     final["method"] = final["method"].map(LABEL).fillna(final["method"])
     final = final.rename(columns={"level": "blocked %", "mae": "final error", "mae_sd": "sd over runs",
                                   "cost_days": "cost (team days)", "coverage_90": "coverage of the 90% interval"})
-    reach = pd.read_csv(RESULTS / "campaign_cost_to_reach.csv")
+    reach = pd.read_csv(RESULTS / f"campaign_cost_to_reach{ARGS.suffix}.csv")
     reach["cost"] = reach["cost"] / 24
     reach["method"] = reach["method"].map(LABEL).fillna(reach["method"])
     reach = reach.rename(columns={"level": "blocked %", "cost": "team days to reach the error",
                                   "reached": "share of runs that reach it", "target": "error target"})
-    ab_path = RESULTS / "ablation_2x2.csv"
+    ab_path = RESULTS / ARGS.ablation
     if ab_path.exists():
         ab = pd.read_csv(ab_path).pivot_table(index=["level", "round"], columns=["selection", "estimator"], values="mae")
         ab.columns = [f"{s} wards, {e} estimate" for s, e in ab.columns]
@@ -79,26 +86,26 @@ at the lowest cost, when landslides block a part of the roads?</div>
 <tr><td>Kriging, largest decrease of the total variance</td><td>Survey, feature table</td><td>The wards whose survey decreases the kriging variance of all wards the most</td></tr>
 <tr><td>GORKHA, mode 2</td><td>Ward graph, survey, feature table, Sentinel-2 context images</td><td>A learned visit score that sees the road state. The estimate is a GNN group blended with regression kriging by a cross-fit weight.</td></tr>
 <tr><td>GORKHA, mode 1</td><td>Ward graph, survey, feature table, Sentinel-1 coherence before and after</td><td>Same</td></tr></table>
-<div class="box"><b>Cost.</b> Travel time on the open roads (OpenStreetMap, 2026) plus 8 hours for each ward survey.
+<div class="box"><b>Cost.</b> Travel time on the open roads ({ARGS.roads}) plus 8 hours for each ward survey.
 A ward that no open road reaches costs a 12 hour helicopter trip. <b>Blockage.</b> Two kinds. Observed: the 13 road
 segments that the NGA marked impassable on 28 April 2015 (HDX), 0.7 km near the Kathmandu valley, matched to 14 road
 pieces. Simulated: a random share of the 656 road pieces that a landslide of the USGS inventory crosses is closed
 (30%, 60%, or 100%), as a sensitivity case, because the observed data cover a small area.</div>
 
 <h2>Error against cost</h2>
-<figure>{img("campaign_error_cost.png")}<figcaption>Each line is the mean of the runs at one blockage level. Lower and
+<figure>{img(f"campaign_error_cost{ARGS.suffix}.png")}<figcaption>Each line is the mean of the runs at one blockage level. Lower and
 more to the left is better.</figcaption></figure>
 
 <h2>Error against the share of surveyed wards</h2>
-<figure>{img("campaign_error_share.png")}<figcaption>The same campaigns, with the share of surveyed wards on the
+<figure>{img(f"campaign_error_share{ARGS.suffix}.png")}<figcaption>The same campaigns, with the share of surveyed wards on the
 horizontal axis. This shows the value of the selection for each surveyed ward, without the cost.</figcaption></figure>
 
 <h2>Cost against the blockage</h2>
-<figure>{img("campaign_cost_blockage.png")}<figcaption>Team days to reach an error target, for each method, against the
+<figure>{img(f"campaign_cost_blockage{ARGS.suffix}.png")}<figcaption>Team days to reach an error target, for each method, against the
 share of blocked road pieces. A run that never reaches the target counts with its full cost.</figcaption></figure>
 
 <h2>Benefit of GORKHA against the blockage</h2>
-<figure>{img("campaign_benefit_blockage.png")}<figcaption>Team days saved against the strongest kriging method (largest
+<figure>{img(f"campaign_benefit_blockage{ARGS.suffix}.png")}<figcaption>Team days saved against the strongest kriging method (largest
 decrease of the total variance) to reach an error of 0.17. A value above zero means GORKHA is cheaper.</figcaption></figure>
 
 <h2>Estimator against selection</h2>
@@ -116,6 +123,6 @@ runs is small (1 to 6 for each level and method), so differences below the stand
 established. The GORKHA estimate blends a GNN group with regression kriging; the column "blend_gnn" of the final
 table gives the mean weight of the GNN, selected by a cross-fit on the surveyed wards.</div>
 </body></html>"""
-    out = ROOT / "docs" / "SHERPA_results.html"
+    out = ROOT / "docs" / f"GORKHA_results{ARGS.suffix}.html"
     out.write_text(html, encoding="utf-8")
     print(f"wrote {out}")
