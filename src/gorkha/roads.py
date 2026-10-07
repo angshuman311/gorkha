@@ -124,7 +124,10 @@ def load() -> dict:
         return {k: f[k] for k in f.files}
 
 
-BLOCK_LEVELS = {0: 1, 30: 3, 60: 3, 100: 1}   # share of crossed road pieces in %, and draws
+# Blockage levels: share of the crossed road pieces in %, and the number of random draws.
+# "obs" is the observed blockage: the 13 impassable road segments of 28 April 2015 (NGA,
+# on HDX), matched to the road pieces within 40 m (data/processed/roads_obs_blocked_edges.npy).
+BLOCK_LEVELS = {"0": 1, "obs": 1, "30": 3, "60": 3, "100": 1}
 
 
 def level_matrices() -> dict:
@@ -135,13 +138,23 @@ def level_matrices() -> dict:
     xy = wards.to_numpy() * 1000
     graph = {"xy": r["node_xy"], "a": r["edge_a"], "b": r["edge_b"], "hours": r["edge_hours"]}
     crossed = np.flatnonzero(r["edge_blocked"])
+    path = PROCESSED / "roads_levels.npz"
     out = {}
+    if path.exists():
+        with np.load(path) as f:
+            out = {k: f[k] for k in f.files}
     for level, draws in BLOCK_LEVELS.items():
         for d in range(draws):
-            rng = np.random.default_rng([23, level, d])
-            closed = rng.choice(crossed, size=int(round(len(crossed) * level / 100)), replace=False)
+            key = f"t_{level}_{d}"
+            if key in out:
+                continue
             open_edge = np.ones(len(r["edge_hours"]), dtype=bool)
-            open_edge[closed] = False
-            out[f"t_{level}_{d}"] = ward_travel_hours(graph, xy, open_edge).astype("float32")
-    np.savez_compressed(PROCESSED / "roads_levels.npz", **out)
+            if level == "obs":
+                open_edge[np.load(PROCESSED / "roads_obs_blocked_edges.npy")] = False
+            else:
+                rng = np.random.default_rng([23, int(level), d])
+                closed = rng.choice(crossed, size=int(round(len(crossed) * int(level) / 100)), replace=False)
+                open_edge[closed] = False
+            out[key] = ward_travel_hours(graph, xy, open_edge).astype("float32")
+    np.savez_compressed(path, **out)
     return out

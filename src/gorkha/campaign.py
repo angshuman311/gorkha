@@ -5,13 +5,17 @@ travel on the open roads (shortest travel time), survey the wards, and the label
 visible. The cost of a round is the travel time plus a fixed survey time for each ward.
 A ward that no open road reaches costs a helicopter trip.
 
-Three methods (decision of 2026-10-07):
+Methods (decisions of 2026-10-07):
 - "random": regression kriging estimate (survey and feature table), random wards.
-- "kriging": regression kriging estimate, wards with the largest kriging variance. The
-  roads matter only for the route to the selected wards.
-- "sherpa": GNN estimate with uncertainty. A second network gives a visit score for each
+- "nearest": regression kriging estimate, each team goes to the nearest ward without a
+  survey (teams without guidance, a clustered survey).
+- "kriging_var": regression kriging estimate, wards with the largest kriging variance.
+- "kriging_ivr": regression kriging estimate, wards whose survey decreases the total
+  kriging variance the most.
+- "gorkha": GNN estimate with uncertainty, blended with regression kriging by a weight that
+  a cross-fit on the surveyed wards selects. A second network gives a visit score for each
   ward. It sees the road state and learns from damage maps that the model draws from its
-  own uncertainty.
+  own uncertainty. The old name "sherpa" is accepted.
 """
 
 import numpy as np
@@ -66,6 +70,55 @@ def select_kriging(xy, resid, surveyed, n_pick: int) -> list:
         var = kriging_variance(xy[have], xy, p)
         var[have] = -1.0
         i = int(np.argmax(var))
+        picks.append(i)
+        have[i] = True
+    return picks
+
+
+def select_kriging_ivr(xy, resid, surveyed, n_pick: int, candidates=None) -> list:
+    """Wards whose survey decreases the total kriging variance the most (integrated variance
+    reduction), one after the other.
+
+    With a covariance C between wards, the kriging variance after the surveyed set is the
+    diagonal of the conditional covariance P. A survey of ward i decreases the variance of
+    ward j by P[i, j]^2 / P[i, i]. The ward with the largest sum over j is selected, and P
+    is updated by the rank-one formula.
+    """
+    p = baselines.fit_variogram(xy[surveyed], resid)
+    if p["psill"] <= 1e-9:
+        p = {"psill": max(np.var(resid), 1e-4), "range": 30.0, "nugget": 0.0}
+    h = np.linalg.norm(xy[:, None] - xy[None], axis=2)
+    cov = p["psill"] * np.exp(-3 * h / p["range"])
+    n = len(xy)
+    nugget = max(p["nugget"], 1e-6)
+    # Condition on the surveyed wards.
+    s = np.flatnonzero(surveyed)
+    k_ss = cov[np.ix_(s, s)] + nugget * np.eye(len(s))
+    k_s = cov[:, s]
+    post = cov - k_s @ np.linalg.solve(k_ss, k_s.T)
+    have = surveyed.copy()
+    picks = []
+    for _ in range(n_pick):
+        gain = (post ** 2).sum(axis=1) / (np.diag(post) + nugget)
+        gain[have] = -1.0
+        if candidates is not None:
+            gain[~candidates] = -1.0
+        i = int(np.argmax(gain))
+        picks.append(i)
+        have[i] = True
+        col = post[:, i].copy()
+        post -= np.outer(col, col) / (post[i, i] + nugget)
+    return picks
+
+
+def select_nearest(travel: np.ndarray, teams: list, surveyed: np.ndarray) -> list:
+    """Each team goes to the nearest ward without a survey (teams without guidance)."""
+    have = surveyed.copy()
+    picks = []
+    for t in teams:
+        cost = np.where(np.isfinite(travel[t]), travel[t], HELICOPTER_HOURS + 1e3).astype(float)
+        cost[have] = np.inf
+        i = int(np.argmin(cost))
         picks.append(i)
         have[i] = True
     return picks
@@ -218,6 +271,41 @@ def select_sherpa(sd, mean, surveyed, xy, pairs, travel, teams, n_pick, range_km
     return picks
 
 
+# ---------------------------------------------------------------- GORKHA estimate
+
+
+def gorkha_estimate(x, xy, y, surveyed, edges, seed: int, members: int = 3):
+    """GNN group blended with regression kriging. The blend weight comes from a two-fold
+    cross-fit on the surveyed wards: each fold is estimated by models that did not see it,
+    and the weight with the smallest error on the held-out labels is selected.
+
+    Return the estimate, the standard deviation, and the weight of the GNN.
+    """
+    n = len(y)
+    rng = np.random.default_rng([19, seed])
+    fold = rng.integers(0, 2, size=n)
+    oof_g, oof_k = np.full(n, np.nan), np.full(n, np.nan)
+    for f in (0, 1):
+        vis = surveyed & (fold != f)
+        hold = surveyed & (fold == f)
+        if vis.sum() < 4 or hold.sum() == 0:
+            continue
+        mg, _, _ = gnn.fit_predict(x, xy, y, vis, edges, seed=seed * 7 + f, members=1)
+        mk, _, _ = regression_kriging(x, xy, y, vis)
+        oof_g[hold], oof_k[hold] = mg[hold], mk[hold]
+    ok = ~np.isnan(oof_g)
+    weight = 0.0
+    if ok.sum() >= 4:
+        grid = np.linspace(0.0, 1.0, 11)
+        errs = [np.mean((w * oof_g[ok] + (1 - w) * oof_k[ok] - y[ok]) ** 2) for w in grid]
+        weight = float(grid[int(np.argmin(errs))])
+    mg, sg, _ = gnn.fit_predict(x, xy, y, surveyed, edges, seed=seed, members=members)
+    mk, sk, _ = regression_kriging(x, xy, y, surveyed)
+    mean = np.clip(weight * mg + (1 - weight) * mk, 0, 1)
+    sd = weight * sg + (1 - weight) * sk
+    return mean, sd, weight
+
+
 # ---------------------------------------------------------------- campaign
 
 
@@ -231,29 +319,37 @@ def run(method: str, x, xy, y, pairs, edges, travel, start_wards: list, rounds: 
     SHERPA uses `x`.
     """
     x_sherpa = x if x_sherpa is None else x_sherpa
+    if method == "sherpa":
+        method = "gorkha"
     n = len(y)
     rng = np.random.default_rng([17, seed])
     surveyed = np.zeros(n, dtype=bool)
     surveyed[start_wards] = True
     teams, cost, flights, records = list(start_wards), 0.0, 0, []
     for rnd in range(rounds + 1):
-        if method == "sherpa":
-            mean, sd, _ = gnn.fit_predict(x_sherpa, xy, y, surveyed, edges, seed=seed * 100 + rnd,
-                                          members=members)
+        weight = np.nan
+        if method == "gorkha":
+            mean, sd, weight = gorkha_estimate(x_sherpa, xy, y, surveyed, edges, seed=seed * 100 + rnd,
+                                               members=members)
         else:
             mean, sd, resid = regression_kriging(x, xy, y, surveyed)
         err = np.abs(mean - y)[~surveyed]
         records.append({"method": method, "seed": seed, "round": rnd, "n_surveyed": int(surveyed.sum()),
                         "cost_hours": cost, "flights": flights, "mae": float(err.mean()),
-                        "coverage_90": float((err <= 1.6449 * sd[~surveyed]).mean())})
+                        "coverage_90": float((err <= 1.6449 * sd[~surveyed]).mean()),
+                        "blend_gnn": weight})
         if keep_estimates:
             records[-1].update(estimate=mean.astype("float32").tolist(), surveyed=surveyed.tolist())
         if rnd == rounds:
             break
         if method == "random":
             picks = list(rng.choice(np.flatnonzero(~surveyed), size=len(teams), replace=False))
-        elif method == "kriging":
+        elif method == "nearest":
+            picks = select_nearest(travel, teams, surveyed)
+        elif method in ("kriging", "kriging_var"):
             picks = select_kriging(xy, resid, surveyed, len(teams))
+        elif method == "kriging_ivr":
+            picks = select_kriging_ivr(xy, resid, surveyed, len(teams))
         else:
             p = baselines.fit_variogram(xy[surveyed], y[surveyed] - mean[surveyed])
             range_km = float(np.clip(p["range"], 10.0, 80.0))

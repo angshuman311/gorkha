@@ -5,8 +5,9 @@ One team starts at the headquarters of each district (11 teams). In each round, 
 surveys one ward. A blockage level closes a random share of the road pieces that a
 landslide crosses. The result is the error of the damage estimate against the survey cost.
 
-Cases: "random" (kriging, random wards), "kriging" (kriging, largest variance, then the
-shortest open route), "sherpa" (GNN with a learned visit score that sees the road state).
+Methods: random, nearest (teams without guidance), kriging_var (largest variance),
+kriging_ivr (largest decrease of the total variance), gorkha (learned visit score that sees
+the road state). The estimate of the first four is regression kriging.
 """
 
 import argparse
@@ -23,8 +24,9 @@ from gorkha.paths import PROCESSED, RESULTS
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--rounds", type=int, default=16)
-    parser.add_argument("--levels", default="0,30,60,100")
-    parser.add_argument("--methods", default="random,kriging,sherpa")
+    parser.add_argument("--levels", default="0,obs,30,60,100")
+    parser.add_argument("--methods", default="random,nearest,kriging_var,kriging_ivr,gorkha")
+    parser.add_argument("--keep", action="store_true", help="keep the estimate of each ward")
     parser.add_argument("--events", type=int, default=2, choices=[1, 2])
     parser.add_argument("--out", default="campaign.parquet")
     parser.add_argument("--image", default="s2_embedding_ssl4eo_ft.parquet",
@@ -54,23 +56,24 @@ if __name__ == "__main__":
     rows = pd.read_parquet(out_path).to_dict("records") if out_path.exists() else []
     done = {(r["level"], r["draw"], r["method"], r["seed"]) for r in rows}
     t0 = time.time()
-    for level in [int(v) for v in args.levels.split(",")]:
+    for level in args.levels.split(","):
         for draw in range(roads.BLOCK_LEVELS[level]):
             travel = matrices[f"t_{level}_{draw}"]
             # With one draw (levels 0 and 100), the seeds give the repetitions.
             reps = 3 if roads.BLOCK_LEVELS[level] == 1 else 1
-            plan = [(m, draw * 10 + s) for m in methods
-                    for s in range(reps * 2 if m == "random" else (1 if m == "kriging" else reps))]
+            runs = {"random": 2 * reps, "gorkha": reps, "sherpa": reps}
+            plan = [(m, draw * 10 + s) for m in methods for s in range(runs.get(m, 1))]
             for method, seed in plan:
                 if (level, draw, method, seed) in done:
                     continue
                 rec = campaign.run(method, x, xy, y, pairs, edges, travel, start, args.rounds, seed=seed,
-                                   x_sherpa=x_sherpa)
+                                   x_sherpa=x_sherpa, keep_estimates=args.keep)
                 for row in rec:
                     row.update(level=level, draw=draw)
                 rows += rec
                 last = rec[-1]
-                print(f"level {level:3d} draw {draw} {method:8s} seed {seed}: final error "
+                print(f"level {level:>3} draw {draw} {method:12s} seed {seed}: final error "
                       f"{last['mae']:.4f}, cost {last['cost_hours']:.0f} h, flights {last['flights']}, "
+                      f"blend {last['blend_gnn']:.1f}, "
                       f"{time.time() - t0:.0f} s", flush=True)
                 pd.DataFrame(rows).to_parquet(out_path, index=False)
