@@ -19,7 +19,10 @@ from gorkha.paths import CRS_METRIC, INTERIM, PROCESSED, RAW
 
 JOB_NAME = "sherpa-gorkha"
 LOOKS = "10x2"  # 40 m pixels, 15 credits for each job
-MIN_OVERLAP = 0.02
+# Two scenes of adjacent frames overlap by a small share. Such a pair fails at ASF
+# ("no points available for determining average intensity"). A pair of the same frame
+# overlaps by 0.3 or more.
+MIN_OVERLAP = 0.3
 PAIRS = {
     12: [("pre", "2015-04-04", "2015-04-16"), ("main", "2015-04-16", "2015-04-28"),
          ("after", "2015-04-28", "2015-05-22")],

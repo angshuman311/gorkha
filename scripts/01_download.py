@@ -10,6 +10,7 @@ SOURCES = {
     "shakemap_variants": download.shakemap_variants,
     "admin": download.admin_boundaries,
     "roads": download.roads,
+    "roads_full": download.roads_full,
     "dem": download.dem,
     "landslides": download.landslides,
     "gdif": download.gdif,

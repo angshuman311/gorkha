@@ -37,7 +37,7 @@ FEATURES = [
     "elev_mean", "slope_mean",
     "dpm_cover", "dpm_valid_frac", "dpm_mean", "dpm_p90",
     "ls_mapped", "ls_frac",
-    "dist_epi_km", "dist_road_km", "dist_hq_km",
+    "dist_epi_km", "dist_epi2_km", "dist_road_km", "dist_hq_km",
     "area_km2",
 ]
 
@@ -224,6 +224,11 @@ def build() -> gpd.GeoDataFrame:
     # Distances from the ward centroid.
     epicenter = gpd.GeoSeries([Point(EPICENTER_LONLAT)], crs=WGS84).to_crs(CRS_METRIC).iloc[0]
     f["dist_epi_km"] = cent.distance(epicenter) / 1000
+    # Epicenter of the second earthquake, from the header of its ShakeMap grid.
+    head = (RAW / "shakemap" / "grid_after_2015.xml").read_text(encoding="utf-8")[:3000]
+    event = dict(re.findall(r'(\w+)="([^"]*)"', re.search(r"<event ([^>]*)>", head).group(1)))
+    second = gpd.GeoSeries([Point(float(event["lon"]), float(event["lat"]))], crs=WGS84)
+    f["dist_epi2_km"] = cent.distance(second.to_crs(CRS_METRIC).iloc[0]) / 1000
     f["dist_road_km"] = cent.distance(unary_union(_major_roads().values)) / 1000
     d = gpd.read_file(INTERIM / "osm_districts.gpkg")
     hq = gpd.GeoSeries(gpd.points_from_xy(d["hq_lon"], d["hq_lat"]), crs=WGS84).to_crs(CRS_METRIC)

@@ -171,6 +171,22 @@ def gdif() -> Path:
     return _fetch_zip(GDIF_URL, "gdif")
 
 
+def roads_full() -> list[Path]:
+    """All roads that a vehicle can use, in 6 tiles of the study box (for the planner)."""
+    s0, w0, n0, e0 = STUDY_BBOX
+    classes = ("motorway|trunk|primary|secondary|tertiary|unclassified|residential|service|track"
+               "|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|road")
+    out = []
+    lats = [s0, (s0 + n0) / 2, n0]
+    lons = [w0 + k * (e0 - w0) / 3 for k in range(4)]
+    for i in range(2):
+        for j in range(3):
+            box = f"{lats[i]},{lons[j]},{lats[i + 1]},{lons[j + 1]}"
+            query = f'[out:json][timeout:900];way["highway"~"^({classes})$"]({box});out geom;'
+            out.append(overpass(query, RAW / "osm" / f"roads_full_{i}{j}.json"))
+    return out
+
+
 def dpm() -> Path:
     """ARIA Damage Proxy Maps (ALOS-2 and COSMO-SkyMed) and their footprints.
 

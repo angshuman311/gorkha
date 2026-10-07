@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from gorkha import graph, plots, survey_sim
+from gorkha import features, graph, plots, survey_sim
 from gorkha.design import FEATURE_GROUPS, TARGET
 from gorkha.paths import CRS_METRIC, FIGURES, PROCESSED, ROOT
 
@@ -41,6 +41,14 @@ def survey_figure(w, wm, pairs):
         wm[s].plot(ax=ax, column=TARGET, cmap=plots.SEQUENTIAL, vmin=0, vmax=1,
                    edgecolor=plots.INK, linewidth=0.4)
         plots.districts().boundary.plot(ax=ax, color=plots.INK_2, linewidth=0.5)
+        if scheme == "access":
+            roads = features._major_roads()
+            roads.plot(ax=ax, color="#eb6834", linewidth=0.9)
+            ax.plot([], [], color="#eb6834", linewidth=1.5, label="major road (OSM)")
+            ax.legend(loc="lower left", fontsize=8)
+            b = wm.total_bounds
+            ax.set_xlim(b[0] - 3000, b[2] + 3000)
+            ax.set_ylim(b[1] - 3000, b[3] + 3000)
         ax.set_title(f"{names[scheme]} survey: {int(s.sum())} of {len(w)} wards")
         ax.set_axis_off()
     plots.scale_bar(fig, axes, plots.SEQUENTIAL, 0, 1, "visible label (fraction with grade 4 or 5)", 0.7)
@@ -145,6 +153,7 @@ if __name__ == "__main__":
     wm = w.to_crs(CRS_METRIC)
     g = graph.load()
     fig_survey = survey_figure(w, wm, g["adj_pairs"])
+    fig_survey.savefig(FIGURES / "survey_schemes.png")
     fig_ward, info, count = ward_patch_figure(w, wm)
     fig_ward.savefig(FIGURES / "s2_ward_example.png")
     parts = [pd.read_parquet(p) for p in sorted(PATCHES.glob("s2_index_part_*.parquet"))]
