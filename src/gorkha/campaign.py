@@ -222,9 +222,10 @@ def select_sherpa(sd, mean, surveyed, xy, pairs, travel, teams, n_pick, range_km
 
 
 def run(method: str, x, xy, y, pairs, edges, travel, start_wards: list, rounds: int, seed: int = 0,
-        members: int = 3, learned: bool = True, x_sherpa=None) -> list:
+        members: int = 3, learned: bool = True, x_sherpa=None, keep_estimates: bool = False) -> list:
     """Run one campaign. Return one record for each round (round 0 is the start).
 
+    With `keep_estimates`, each record also has the estimate of each ward and the survey mask.
     `x` is the feature table (input 3) for the kriging cases. `x_sherpa` is the input of
     SHERPA: the feature table with the image vectors (inputs 3 and 4). If it is None,
     SHERPA uses `x`.
@@ -245,6 +246,8 @@ def run(method: str, x, xy, y, pairs, edges, travel, start_wards: list, rounds: 
         records.append({"method": method, "seed": seed, "round": rnd, "n_surveyed": int(surveyed.sum()),
                         "cost_hours": cost, "flights": flights, "mae": float(err.mean()),
                         "coverage_90": float((err <= 1.6449 * sd[~surveyed]).mean())})
+        if keep_estimates:
+            records[-1].update(estimate=mean.astype("float32").tolist(), surveyed=surveyed.tolist())
         if rnd == rounds:
             break
         if method == "random":
