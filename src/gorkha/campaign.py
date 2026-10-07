@@ -18,6 +18,8 @@ Methods (decisions of 2026-10-07):
   own uncertainty. The old name "sherpa" is accepted.
 """
 
+import os
+
 import numpy as np
 import torch
 from sklearn.linear_model import Ridge, RidgeCV
@@ -26,6 +28,11 @@ from torch_geometric.nn import GATv2Conv
 
 from . import baselines, gnn
 from .roads import HELICOPTER_HOURS, SURVEY_HOURS
+
+# A ground route that takes more than this many hours is replaced by a helicopter trip.
+# The default (infinite) keeps the ground route whatever its length. The 2015 graph has
+# trails with walks of a day or more, so the third study sets GORKHA_FLY_ABOVE=12.
+FLY_ABOVE_HOURS = float(os.environ.get("GORKHA_FLY_ABOVE", "inf"))
 
 # ---------------------------------------------------------------- kriging
 
@@ -130,7 +137,7 @@ def select_nearest(travel: np.ndarray, teams: list, surveyed: np.ndarray) -> lis
 def nearest_team_hours(travel: np.ndarray, teams: list) -> np.ndarray:
     """Cost in hours for the nearest team to reach and survey each ward."""
     t = travel[teams].min(axis=0)
-    return np.where(np.isfinite(t), t, HELICOPTER_HOURS) + SURVEY_HOURS
+    return np.where(np.isfinite(t) & (t <= FLY_ABOVE_HOURS), t, HELICOPTER_HOURS) + SURVEY_HOURS
 
 
 def assign_and_move(picks: list, teams: list, travel: np.ndarray) -> tuple[float, list, int]:
@@ -139,7 +146,8 @@ def assign_and_move(picks: list, teams: list, travel: np.ndarray) -> tuple[float
     free = list(range(len(teams)))
     while left and free:
         t = travel[np.ix_([teams[k] for k in free], left)]
-        t = np.where(np.isfinite(t), t, HELICOPTER_HOURS + 1e3)   # a flight only if no road
+        # A flight if no ground route exists, or if the ground route is too long.
+        t = np.where(np.isfinite(t) & (t <= FLY_ABOVE_HOURS), t, HELICOPTER_HOURS + 1e3)
         a, b = np.unravel_index(np.argmin(t), t.shape)
         hours = t[a, b]
         if hours >= 1e3:
@@ -197,7 +205,7 @@ def imagined_benefit(sd, kern, cost, travel, surveyed, rng, n_maps: int = 24, lo
     benefit /= n_maps
     benefit[surveyed] = 0.0
     rate = benefit / cost
-    step = np.where(np.isfinite(travel), travel, HELICOPTER_HOURS) + SURVEY_HOURS
+    step = np.where(np.isfinite(travel) & (travel <= FLY_ABOVE_HOURS), travel, HELICOPTER_HOURS) + SURVEY_HOURS
     follow = (benefit[None, :] / step)
     np.fill_diagonal(follow, 0.0)
     return rate + lookahead * follow.max(axis=1) * (benefit > 0)
@@ -254,7 +262,8 @@ def select_sherpa(sd, mean, surveyed, xy, pairs, travel, teams, n_pick, range_km
             # The score is a benefit for each hour. Update it for the moved teams and for the
             # decreased uncertainty without a new training in the same round.
             cost = nearest_team_hours(travel, teams)
-            score = base * (base_cost / cost) * (sd / sd0 if k else 1.0)
+            with np.errstate(invalid="ignore"):
+                score = base * (base_cost / cost) * (sd / sd0 if k else 1.0)
         else:
             cost = nearest_team_hours(travel, teams)
             score = imagined_benefit(sd, kern, cost, travel, have, rng)

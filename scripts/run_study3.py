@@ -26,7 +26,8 @@ def run(name: str, args: list, required: bool = True) -> bool:
     t0 = time.time()
     with open(ROOT / "results" / f"{name}.log", "w", encoding="utf-8") as out:
         code = subprocess.call([str(PY), *args], cwd=ROOT, stdout=out, stderr=subprocess.STDOUT,
-                               env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
+                               env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8",
+                                    "GORKHA_FLY_ABOVE": "12"})
     log(f"end   {name}: exit {code}, {(time.time() - t0) / 60:.0f} min")
     if code != 0 and required:
         log("the chain stops here")
