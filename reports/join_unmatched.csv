@@ -1,0 +1,5 @@
+ward_id,vdcmun_id,vdcmun_name,district_id,district_name,ward_no,mun_osm,score,osm_ward_no,join_note,osm_id,n_buildings,matched,side,name,mun_prefix,mun_name_en,mun_suffix_en,district,area_km2
+230899.0,2308.0,Langtang National Park,23.0,Sindhupalchok,99,,,99.0,,,0.0,False,survey ward without a polygon,,,,,,
+231199.0,2311.0,Panchpokhari Thangpal Rural Municipality,23.0,Sindhupalchok,99,10534615.0,100.0,99.0,,,0.0,False,survey ward without a polygon,,,,,,
+280699.0,2806.0,Langtang National Park,28.0,Nuwakot,99,,,99.0,,,0.0,False,survey ward without a polygon,,,,,,
+310999.0,3109.0,Parsa Wild Life Reserve,31.0,Makwanpur,99,,,99.0,,,0.0,False,survey ward without a polygon,,,,,,

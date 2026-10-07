@@ -1,0 +1,114 @@
+district,vdcmun_id,vdcmun_name,survey_wards,mun_osm,mun_name_en,mun_prefix,osm_wards,score,accepted_by,accepted
+Dhading,3002,Dhunibenshi Municipality,9,10524862.0,Dhunibesi,Dhunibesi,9.0,94.11764705882352,score,True
+Dhading,3008,Netrawati Dabajong Rural Municipality,5,10524870.0,Netrawati Dabjong,Netrawati Dabjong,5.0,96.96969696969697,score,True
+Dhading,3001,Benighat Rorang Rural Municipality,10,10524866.0,Benighat Rorang,Benighat Rorang,10.0,100.0,score,True
+Dhading,3003,Gajuri Rural Municipality,8,10524864.0,Gajuri,Gajuri,8.0,100.0,score,True
+Dhading,3004,Galchhi Rural Municipality,8,10524865.0,Galchhi,Galchhi,8.0,100.0,score,True
+Dhading,3005,Ganga Jamuna Rural Municipality,7,10524871.0,Gangajamuna,Gangajamuna,7.0,100.0,score,True
+Dhading,3006,Jwalamukhi Rural Municipality,7,10524868.0,Jwalamukhi,Jwalamukhi,7.0,100.0,score,True
+Dhading,3007,Khaniyabas Rural Municipality,5,10524872.0,Khaniyabash,Khaniyabash,5.0,100.0,score,True
+Dhading,3009,Neelakantha Municipality,14,7437233.0,Nilakantha,Nilkantha,14.0,100.0,score,True
+Dhading,3010,Rubi Valley Rural Municipality,6,10524873.0,Rubi Valley,Rubi Valley,6.0,100.0,score,True
+Dhading,3011,Siddhalek Rural Municipality,7,10524867.0,Siddhalek,Siddhalek,7.0,100.0,score,True
+Dhading,3012,Thakre Rural Municipality,11,10524863.0,Thakre,Thakre,11.0,100.0,score,True
+Dhading,3013,Tripurasundari Rural Municipality,7,10524869.0,Tripura Sundari,Tripura Sundari,7.0,100.0,score,True
+Dolakha,2201,Baitedhar Rural Municipality,8,10427742.0,Baiteshwor,Baiteshwor,8.0,73.6842105263158,manual,True
+Dolakha,2202,Bhimeshwor Municipality,9,10430163.0,Bhimeshwor,Bhimeshwor,9.0,100.0,score,True
+Dolakha,2203,Bigu Rural Municipality,8,10430165.0,Bigu,Bigu,8.0,100.0,score,True
+Dolakha,2204,Gaurishankar Rural Municipality,9,10427745.0,Gaurishankar,Gaurishankar,9.0,100.0,score,True
+Dolakha,2205,Jiri Municipality,9,10427744.0,Jiri,Jiri,9.0,100.0,score,True
+Dolakha,2206,Kalinchowk Rural Municipality,9,10430164.0,Kalinchok,Kalinchok,9.0,100.0,score,True
+Dolakha,2207,Melung Rural Municipality,7,10427743.0,Melung,Melung,7.0,100.0,score,True
+Dolakha,2208,Shailung Rural Municipality,8,10430162.0,Sailung,Sailung,8.0,100.0,score,True
+Dolakha,2209,Tamakoshi Rural Municipality,7,10430161.0,Tamakoshi,Tamakoshi,7.0,100.0,score,True
+Gorkha,3603,Barpak Sulikot Rural Municipality,8,10524453.0,,Sulikot,8.0,70.0,manual,True
+Gorkha,3604,Bhimsen Thapa Rural Municipality,8,10524450.0,,Bhimsen,8.0,75.0,manual,True
+Gorkha,3605,Chumanubri Rural Municipality,7,10524455.0,,Chum Nubri,7.0,94.73684210526316,score,True
+Gorkha,3601,Aarughat Rural Municipality,10,10524451.0,,Aarughat,10.0,100.0,score,True
+Gorkha,3602,Ajirkot Rural Municipality,5,10524454.0,,Ajirkot,5.0,100.0,score,True
+Gorkha,3606,Dharche Rural Municipality,7,10524452.0,,Dharche,7.0,100.0,score,True
+Gorkha,3607,Gandaki Rural Municipality,8,10524448.0,,Gandaki,8.0,100.0,score,True
+Gorkha,3608,Gorkha Municipality,14,10524445.0,Gorkha,Gorkha,14.0,100.0,score,True
+Gorkha,3609,Palungtar Municipality,10,10524446.0,,Palungtar,10.0,100.0,score,True
+Gorkha,3610,Shahid Lakhan Rural Municipality,9,10524449.0,,Sahid Lakhan,9.0,100.0,score,True
+Gorkha,3611,Siranchowk Rural Municipality,8,10524447.0,,Siranchok,8.0,100.0,score,True
+Kavrepalanchok,2410,Panauti Municipality,12,12394203.0,Paunauti,Paunauti,12.0,93.33333333333333,score,True
+Kavrepalanchok,2404,Chauri Deurali Rural Municipality,9,12394195.0,Chaunri Deurali,Chaunri Deurali,9.0,96.2962962962963,score,True
+Kavrepalanchok,2401,Banepa Municipality,14,12394201.0,Banepa,Banepa,14.0,100.0,score,True
+Kavrepalanchok,2402,Bethanchowk Rural Municipality,6,12394204.0,Bethanchok,Bethanchok,6.0,100.0,score,True
+Kavrepalanchok,2403,Bhumlu Rural Municipality,10,12394194.0,Bhumlu,Bhumlu,10.0,100.0,score,True
+Kavrepalanchok,2405,Dhulikhel Municipality,12,12394199.0,Dhulikhel,Dhulikhel,12.0,100.0,score,True
+Kavrepalanchok,2406,Khanikhola Rural Municipality,7,12394205.0,Khanikhola,Khanikhola,7.0,100.0,score,True
+Kavrepalanchok,2407,Mahabharat Rural Municipality,8,12394206.0,Mahabharat,Mahabharat,8.0,100.0,score,True
+Kavrepalanchok,2408,Mandan Deupur Municipality,12,12394202.0,Mandandeupur,Mandandeupur,12.0,100.0,score,True
+Kavrepalanchok,2409,Namobuddha Municipality,11,12394198.0,Namobuddha,Namobuddha,11.0,100.0,score,True
+Kavrepalanchok,2411,Panchkhal Municipality,13,12394200.0,Panchkhal,Panchkhal,13.0,100.0,score,True
+Kavrepalanchok,2412,Roshi Rural Municipality,12,12394197.0,Roshi,Roshi,12.0,100.0,score,True
+Kavrepalanchok,2413,Temal Rural Municipality,9,12394196.0,Temal,Temal,9.0,100.0,score,True
+Makwanpur,3101,Bagmati Rural Municipality,9,10537759.0,Bagmati,Bagmati,9.0,100.0,score,True
+Makwanpur,3102,Bakaiya Rural Municipality,12,10541346.0,Bakaiya,Bakaiya,12.0,100.0,score,True
+Makwanpur,3103,Bhimphedi Rural Municipality,9,10537758.0,Bhimphedi,Bhimphedi,9.0,100.0,score,True
+Makwanpur,3104,Hetauda Sub-Metropolitian City,19,5862115.0,Hetauda,Hetauda,19.0,100.0,score,True
+Makwanpur,3105,Indrasarowar Rural Municipality,5,10541347.0,Indrasarowar Rural Municipality,Indrasarowar,5.0,100.0,score,True
+Makwanpur,3106,Kailash Rural Municipality,10,10541345.0,Kailash,Kailash,10.0,100.0,score,True
+Makwanpur,3107,Makawanpurgadhi Rural Municipality,8,10537757.0,Makawanpurgadhi,Makawanpurgadhi,8.0,100.0,score,True
+Makwanpur,3108,Manahari Rural Municipality,9,10541343.0,Manahari,Manahari,9.0,100.0,score,True
+Makwanpur,3110,Raksirang Rural Municipality,9,10541344.0,Raksirang,Raksirang,9.0,100.0,score,True
+Makwanpur,3111,Thaha Municipality,12,10541342.0,,Thaha,12.0,100.0,score,True
+Makwanpur,3109,Parsa Wild Life Reserve,1,,,,,,,False
+Nuwakot,2803,Dupcheshwor Rural Municipality,7,10534793.0,Ducheshwar,Ducheshwar,7.0,85.71428571428572,score,True
+Nuwakot,2813,Tarakeshwor Rural Municipality,6,10534784.0,Tarkeshwar,Tarkeshwar,6.0,85.71428571428572,score,True
+Nuwakot,2801,Belkotgadhi Municipality,13,16106342.0,Belkotgadhi,Belkotgadhi,13.0,100.0,score,True
+Nuwakot,2802,Bidur Municipality,13,10534785.0,Bidur,Bidur,13.0,100.0,score,True
+Nuwakot,2804,Kakani Rural Municipality,8,16106343.0,Kakani,Kakani,8.0,100.0,score,True
+Nuwakot,2805,Kispang Rural Municipality,5,10534782.0,Kispang,Kispang,5.0,100.0,score,True
+Nuwakot,2807,Likhu Rural Municipality,6,10534790.0,Likhu,Likhu,6.0,100.0,score,True
+Nuwakot,2808,Myagang Rural Municipality,6,10534783.0,Myagang Gaunpalika,Myagang,6.0,100.0,score,True
+Nuwakot,2809,Panchakanya Rural Municipality,5,10534789.0,Panchakanya,Panchakanya,5.0,100.0,score,True
+Nuwakot,2810,Shivapuri Rural Municipality,8,10534788.0,Shivapuri,Shivapuri,8.0,100.0,score,True
+Nuwakot,2811,Suryagadhi Rural Municipality,5,10534791.0,Suryagadhi,Suryagadhi,5.0,100.0,score,True
+Nuwakot,2812,Tadi Rural Municipality,6,10534792.0,Tadi,Tadi,6.0,100.0,score,True
+Nuwakot,2806,Langtang National Park,1,,,,,,,False
+Okhaldhunga,1201,Champadevi Rural Municipality,10,10434096.0,Champadevi,Champadevi,10.0,100.0,score,True
+Okhaldhunga,1202,Chishankhu Gadhi Rural Municipality,8,10434101.0,Chisankhugadhi,Chisankhugadhi,8.0,100.0,score,True
+Okhaldhunga,1203,Khiji Demba Rural Municipality,9,10434098.0,Khijidemba,Khijidemba,9.0,100.0,score,True
+Okhaldhunga,1204,Likhu Rural Municipality,9,10434097.0,Likhu,Likhu,9.0,100.0,score,True
+Okhaldhunga,1205,Manebhanjyang Rural Municipality,9,10436729.0,Manebhanjyang,Manebhanjyang,9.0,100.0,score,True
+Okhaldhunga,1206,Molung Rural Municipality,8,10434099.0,Molung,Molung,8.0,100.0,score,True
+Okhaldhunga,1207,Siddhicharan Municipality,12,10434100.0,Siddhicharan,Siddhicharan,12.0,100.0,score,True
+Okhaldhunga,1208,Sunkoshi Rural Municipality,10,10436730.0,Sunkoshi,Sunkoshi,10.0,100.0,score,True
+Ramechhap,2101,Doramba Rural Municipality,7,12393598.0,Doramba Sailung,Doramba,7.0,100.0,score,True
+Ramechhap,2102,Gokulganga Rural Municipality,6,12393603.0,Gokulganga,Gokulganga,6.0,100.0,score,True
+Ramechhap,2103,Khandadevi Rural Municipality,9,12393599.0,Khandadevi,Khandadevi,9.0,100.0,score,True
+Ramechhap,2104,Likhu Tamakoshi Rural Municipality,7,12393602.0,Likhu Tamakoshi,Likhu Tamakoshi,7.0,100.0,score,True
+Ramechhap,2105,Manthali  Municipality,14,12393600.0,Manthali,Manthali,14.0,100.0,score,True
+Ramechhap,2106,Ramechhap Municipality,9,12393601.0,Ramechhap,Ramechhap,9.0,100.0,score,True
+Ramechhap,2107,Sunapati Rural Municipality,5,12393597.0,Sunapati,Sunapati,5.0,100.0,score,True
+Ramechhap,2108,Umakunda Rural Municipality,7,12393604.0,Umakunda,Umakunda,7.0,100.0,score,True
+Rasuwa,2901,Aamachhodingmo Rural Municipality,5,10529088.0,Aamachhodingmo,Aamachhodingmo,5.0,100.0,score,True
+Rasuwa,2902,Gosaikunda Rural Municipality,6,10529084.0,Gosaikunda,Gosaikunda,6.0,100.0,score,True
+Rasuwa,2903,Kalika Rural Municipality,5,10529085.0,Kalika,Kalika,5.0,100.0,score,True
+Rasuwa,2904,Naukunda Rural Municipality,6,10529087.0,Naukunda,Naukunda,6.0,100.0,score,True
+Rasuwa,2905,Uttargaya Rural Municipality,5,10529086.0,Uttargaya,Uttargaya,5.0,100.0,score,True
+Sindhuli,2001,Dudhouli Municipality,14,10442752.0,Dudhauli,Dudhauli,14.0,87.5,score,True
+Sindhuli,2002,Ghyanglekha Rural Municipality,5,10442746.0,Ghanglekh,Ghanglekh,5.0,90.0,score,True
+Sindhuli,2004,Hariharpurgaghi Rural Municipality,8,10442744.0,Hariharpurgadhi,Hariharpurgadhi,8.0,93.33333333333333,score,True
+Sindhuli,2003,Golanjor Rural Municipality,7,10442749.0,Golanjor,Golanjor,7.0,100.0,score,True
+Sindhuli,2005,Kamalamai Municipality,14,10442748.0,Kamalamai,Kamalamai,14.0,100.0,score,True
+Sindhuli,2006,Marin Rural Municipality,7,10442745.0,Marin,Marin,7.0,100.0,score,True
+Sindhuli,2007,Phikkal Rural Municipality,6,10442751.0,Phikkal,Phikkal,6.0,100.0,score,True
+Sindhuli,2008,Sunkoshi Rural Municipality,7,10442747.0,Sunkoshi,Sunkoshi,7.0,100.0,score,True
+Sindhuli,2009,Tinpatan Rural Municipality,11,10442750.0,Tinpatan,Tinpatan,11.0,100.0,score,True
+Sindhupalchok,2302,Balephi Rural Municipality,9,10534609.0,Balefi,Balefi,8.0,83.33333333333334,score,True
+Sindhupalchok,2310,Melanchi Municipality,13,10534618.0,Melamchi,Melamchi,13.0,87.5,score,True
+Sindhupalchok,2301,Bahrabise Municipality,8,10534607.0,Barhabise,Barhabise,9.0,88.88888888888889,score,True
+Sindhupalchok,2306,Indrawoti Rural Municipality,12,10534617.0,Indrawati,Indrawati,12.0,88.88888888888889,score,True
+Sindhupalchok,2304,Choutara Sangachowkgadhi Municipality,14,10534608.0,Chautara Sangachok Gadhi,Chautara Sangachok Gadhi,14.0,95.23809523809523,score,True
+Sindhupalchok,2309,Lisankhu Pakhar Rural Municipality,7,10534611.0,Lisangkhu Pakhar,Lisangkhu Pakhar,7.0,96.55172413793103,score,True
+Sindhupalchok,2303,Bhotekoshi Rural Municipality,5,10534613.0,Bhotekoshi,Bhotekoshi,5.0,100.0,score,True
+Sindhupalchok,2305,Helambu Rural Municipality,7,10534616.0,Helambu,Helambu,7.0,100.0,score,True
+Sindhupalchok,2307,Jugal Rural Municipality,7,10534614.0,Jugal,Jugal,7.0,100.0,score,True
+Sindhupalchok,2311,Panchpokhari Thangpal Rural Municipality,9,10534615.0,Panchpokhari Thangpal,Panchpokhari Thangpal,8.0,100.0,score,True
+Sindhupalchok,2312,Sunkoshi Rural Municipality,7,10534610.0,Sunkoshi,Sunkoshi,7.0,100.0,score,True
+Sindhupalchok,2313,Tripurasundari Rural Municipality,6,10534612.0,Tripurasundari,Tripurasundari,6.0,100.0,score,True
+Sindhupalchok,2308,Langtang National Park,1,,,,,,,False

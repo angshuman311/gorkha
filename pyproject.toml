@@ -1,0 +1,33 @@
+[project]
+name = "gorkha"
+version = "0.1.0"
+description = "Ward-level damage estimation from sparse field surveys, 2015 Gorkha earthquake"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "geopandas",
+    "shapely",
+    "pyogrio",
+    "rasterio",
+    "rasterstats",
+    "pandas",
+    "pyarrow",
+    "numpy",
+    "scikit-learn",
+    "pykrige",
+    "libpysal",
+    "esda",
+    "matplotlib",
+    "requests",
+    "rapidfuzz",
+    "pytest",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
