@@ -1,8 +1,19 @@
 [project]
 name = "gorkha"
-version = "0.1.0"
-description = "Ward-level damage estimation from sparse field surveys, 2015 Gorkha earthquake"
-requires-python = ">=3.10,<3.11"
+version = "0.0.1"
+description = "GORKHA: Graph-based Operational Reconnaissance Kit for Human-in-the-loop Assessment. Post-earthquake damage estimation and survey planning from sparse field surveys."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Angshuman Deb", email = "angshuman311@gmail.com" }]
+keywords = ["earthquake", "damage assessment", "graph neural network", "kriging", "survey planning", "Nepal"]
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: GIS",
+]
 dependencies = [
     "geopandas",
     "shapely",
@@ -13,14 +24,24 @@ dependencies = [
     "pyarrow",
     "numpy",
     "scikit-learn",
+    "scipy",
     "pykrige",
     "libpysal",
     "esda",
     "matplotlib",
     "requests",
     "rapidfuzz",
-    "pytest",
+    "joblib",
 ]
+
+[project.optional-dependencies]
+deep = ["torch", "torch_geometric", "torchgeo"]
+sar = ["asf_search", "hyp3_sdk"]
+test = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/angshuman311/gorkha"
+Issues = "https://github.com/angshuman311/gorkha/issues"
 
 [build-system]
 requires = ["setuptools>=68"]
